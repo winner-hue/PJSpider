@@ -1,5 +1,8 @@
 package icu.fanjie;
 
+import icu.fanjie.base.BaseDownloader;
+import icu.fanjie.base.BaseParser;
+
 import java.util.HashMap;
 
 public class SpiderTracker {
@@ -12,8 +15,8 @@ public class SpiderTracker {
 
 
     public SpiderTracker() {
-        downloader = new BaseDownloader();
-        parser = new BaseParser();
+        this.downloader = new BaseDownloader();
+        this.parser = new BaseParser();
     }
 
 

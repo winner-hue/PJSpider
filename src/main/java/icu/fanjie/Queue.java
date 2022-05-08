@@ -1,4 +1,5 @@
 package icu.fanjie;
 
-public class Queue {
+public interface Queue<E> {
+
 }

@@ -1,4 +1,4 @@
 package icu.fanjie;
 
-public abstract class Storage {
+public interface Storage {
 }
