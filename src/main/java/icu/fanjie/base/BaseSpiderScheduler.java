@@ -8,46 +8,102 @@ import java.util.concurrent.TimeUnit;
 
 public class BaseSpiderScheduler implements SpiderScheduler {
     protected Queue<SpiderTracker> spiderTrackers;
-    protected int threadCount = 1;
+    protected int taskSize = 100 * 10000;
+    protected int threadCount = 10;
     protected Storage storage;
     protected int requestsNum;
     protected int failRequestsNum;
     protected int dataNum;
     protected int currentActiveThreadNum;
     protected ThreadPoolExecutor threadPool;
-    protected int blockingQueueSize;
-    protected boolean isDup;
-    protected Queue<String> dupQueue;
-    protected int status;
+    protected int blockingQueueSize = 100;
+    protected boolean isDup = true;
+    protected Dup<Object> dupQueue;
+    protected int status = 1;
 
     public BaseSpiderScheduler() {
-        spiderTrackers = new BaseQueue<>();
-        dupQueue = new BaseQueue<>();
-        storage = new BaseStorage();
-        blockingQueueSize = 100;
-        LinkedBlockingQueue<Runnable> blockingQueue = new LinkedBlockingQueue<>(blockingQueueSize);
-        threadPool = new ThreadPoolExecutor(threadCount, threadCount, 10, TimeUnit.SECONDS, blockingQueue);
+        createQueue();
+        createStorage();
+        createThreadPool();
+    }
 
+    public BaseSpiderScheduler(Queue<SpiderTracker> spiderTrackers, int taskSize, int threadCount, Storage storage, ThreadPoolExecutor threadPool, int blockingQueueSize, boolean isDup, Dup<Object> dupQueue) {
+        this.spiderTrackers = spiderTrackers;
+        this.taskSize = taskSize;
+        this.threadCount = threadCount;
+        this.storage = storage;
+        this.threadPool = threadPool;
+        this.blockingQueueSize = blockingQueueSize;
+        this.isDup = isDup;
+        this.dupQueue = dupQueue;
+        createQueue();
+        createStorage();
+        createThreadPool();
     }
 
     @Override
     public void createQueue() {
+        spiderTrackers = new BaseQueue<>(taskSize);
+        if (isDup) {
+            dupQueue = new BaseDup<>();
+        }
+    }
+
+    @Override
+    public void createStorage() {
+        storage = new BaseStorage();
+    }
+
+    @Override
+    public void createThreadPool() {
+        LinkedBlockingQueue<Runnable> blockingQueue = new LinkedBlockingQueue<>(blockingQueueSize);
+        threadPool = new ThreadPoolExecutor(threadCount, threadCount, 10, TimeUnit.SECONDS, blockingQueue);
+    }
+
+    @Override
+    public void start() {
 
     }
 
-    public static void main(String[] args) {
-        BaseSpiderScheduler spiderScheduler = new BaseSpiderScheduler();
-        for (int i = 0; i < 100; i++) {
-            while (spiderScheduler.threadPool.getQueue().size() >= spiderScheduler.blockingQueueSize) {
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            spiderScheduler.threadPool.submit(new TestDemo(String.valueOf(i)));
-        }
-        spiderScheduler.threadPool.shutdown();
+    @Override
+    public void monitor() {
+
+    }
+
+    @Override
+    public void run() {
+
+    }
+
+    @Override
+    public void stop() {
+
+    }
+
+    @Override
+    public boolean storage(Object o) {
+        return false;
+    }
+
+    @Override
+    public boolean addSpiderTracker(SpiderTracker tracker) {
+        return false;
+    }
+
+    public int getTaskSize() {
+        return taskSize;
+    }
+
+    public void setTaskSize(int taskSize) {
+        this.taskSize = taskSize;
+    }
+
+    public int getBlockingQueueSize() {
+        return blockingQueueSize;
+    }
+
+    public void setBlockingQueueSize(int blockingQueueSize) {
+        this.blockingQueueSize = blockingQueueSize;
     }
 
     public Queue<SpiderTracker> getSpiderTrackers() {
@@ -122,11 +178,11 @@ public class BaseSpiderScheduler implements SpiderScheduler {
         isDup = dup;
     }
 
-    public Queue<String> getDupQueue() {
+    public Dup<Object> getDupQueue() {
         return dupQueue;
     }
 
-    public void setDupQueue(Queue<String> dupQueue) {
+    public void setDupQueue(Dup<Object> dupQueue) {
         this.dupQueue = dupQueue;
     }
 
