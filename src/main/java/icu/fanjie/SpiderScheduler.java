@@ -3,9 +3,9 @@ package icu.fanjie;
 public interface SpiderScheduler {
     void createQueue();
 
-    void createStorage();
+//    void createStorage();
 
-    void createThreadPool();
+//    void createThreadPool();
 
     void start();
 

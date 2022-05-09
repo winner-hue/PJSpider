@@ -7,6 +7,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class BaseSpiderScheduler implements SpiderScheduler {
+    protected String taskName = "BaseSpider";
     protected Queue<SpiderTracker> spiderTrackers;
     protected int taskSize = 100 * 10000;
     protected int threadCount = 10;
@@ -27,7 +28,8 @@ public class BaseSpiderScheduler implements SpiderScheduler {
         createThreadPool();
     }
 
-    public BaseSpiderScheduler(Queue<SpiderTracker> spiderTrackers, int taskSize, int threadCount, Storage storage, ThreadPoolExecutor threadPool, int blockingQueueSize, boolean isDup, Dup<Object> dupQueue) {
+    public BaseSpiderScheduler(String taskName, Queue<SpiderTracker> spiderTrackers, int taskSize, int threadCount, Storage storage, ThreadPoolExecutor threadPool, int blockingQueueSize, boolean isDup, Dup<Object> dupQueue) {
+        this.taskName = taskName;
         this.spiderTrackers = spiderTrackers;
         this.taskSize = taskSize;
         this.threadCount = threadCount;
@@ -37,8 +39,6 @@ public class BaseSpiderScheduler implements SpiderScheduler {
         this.isDup = isDup;
         this.dupQueue = dupQueue;
         createQueue();
-        createStorage();
-        createThreadPool();
     }
 
     @Override
@@ -49,12 +49,10 @@ public class BaseSpiderScheduler implements SpiderScheduler {
         }
     }
 
-    @Override
     public void createStorage() {
         storage = new BaseStorage();
     }
 
-    @Override
     public void createThreadPool() {
         LinkedBlockingQueue<Runnable> blockingQueue = new LinkedBlockingQueue<>(blockingQueueSize);
         threadPool = new ThreadPoolExecutor(threadCount, threadCount, 10, TimeUnit.SECONDS, blockingQueue);
@@ -62,12 +60,22 @@ public class BaseSpiderScheduler implements SpiderScheduler {
 
     @Override
     public void start() {
+        monitor();
 
     }
 
     @Override
     public void monitor() {
+        SpiderMonitor spiderMonitor = new SpiderMonitor(spiderTrackers, threadPool);
 
+        Thread thread = new Thread(spiderMonitor);
+        thread.setName(taskName);
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -43,5 +43,4 @@ public class BaseQueue<E> implements Queue<E> {
         }
         return null;
     }
-
 }
