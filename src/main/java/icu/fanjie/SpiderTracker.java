@@ -1,7 +1,7 @@
 package icu.fanjie;
 
 import icu.fanjie.base.BaseDownloader;
-import icu.fanjie.base.BaseParser;
+import icu.fanjie.base.BaseNewsParser;
 
 import java.util.HashMap;
 
@@ -12,22 +12,17 @@ public class SpiderTracker {
     protected String previousSeed;
     protected HashMap<String, Object> extraParams;
     protected int priority;
-
+    protected String html;
 
     public SpiderTracker() {
         this.downloader = new BaseDownloader();
-        this.parser = new BaseParser();
+        this.parser = new BaseNewsParser();
     }
 
 
     public SpiderTracker(Downloader downloader, Parser parser) {
         this.downloader = downloader;
         this.parser = parser;
-    }
-
-    protected void run() {
-        this.downloader.download();
-        this.parser.parser();
     }
 
     public Downloader getDownloader() {
@@ -76,5 +71,13 @@ public class SpiderTracker {
 
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    public String getHtml() {
+        return html;
+    }
+
+    public void setHtml(String html) {
+        this.html = html;
     }
 }

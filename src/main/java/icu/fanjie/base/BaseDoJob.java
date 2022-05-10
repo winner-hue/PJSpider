@@ -22,8 +22,8 @@ public class BaseDoJob implements Runnable {
     public void run() {
         Downloader downloader = tracker.getDownloader();
         Parser parser = tracker.getParser();
-        String html = downloader.download();
-        parser.parser();
+        downloader.download(tracker);
+        parser.parser(tracker);
     }
 
     public SpiderTracker getTracker() {
