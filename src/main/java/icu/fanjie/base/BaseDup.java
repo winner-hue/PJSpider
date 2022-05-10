@@ -1,9 +1,11 @@
 package icu.fanjie.base;
 
 import icu.fanjie.Dup;
+import icu.fanjie.SpiderTracker;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public class BaseDup<E> implements Dup<E> {
 
@@ -32,4 +34,10 @@ public class BaseDup<E> implements Dup<E> {
     public boolean clean() {
         return false;
     }
+
+    @Override
+    public List<SpiderTracker> dup(SpiderTracker spiderTracker) {
+        return null;
+    }
+
 }

@@ -1,5 +1,7 @@
 package icu.fanjie;
 
+import java.util.List;
+
 public interface Dup<E> {
     boolean isExist(Object o);
 
@@ -9,4 +11,5 @@ public interface Dup<E> {
 
     boolean clean();
 
+    List<SpiderTracker> dup(SpiderTracker spiderTracker);
 }

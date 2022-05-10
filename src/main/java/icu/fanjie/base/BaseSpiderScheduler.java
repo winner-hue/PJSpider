@@ -6,21 +6,21 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class BaseSpiderScheduler implements SpiderScheduler {
+public class BaseSpiderScheduler {
     protected String taskName = "BaseSpider";
     protected Queue<SpiderTracker> spiderTrackers;
     protected int taskSize = 100 * 10000;
     protected int threadCount = 10;
     protected Storage storage;
-    protected int requestsNum;
-    protected int failRequestsNum;
-    protected int dataNum;
-    protected int currentActiveThreadNum;
+    public static int requestsNum;
+    public static int failRequestsNum;
+    public static int dataNum;
+    public static int currentActiveThreadNum;
     protected ThreadPoolExecutor threadPool;
     protected int blockingQueueSize = 100;
     protected boolean isDup = true;
     protected Dup<Object> dupQueue;
-    protected int status = 1;
+    public static int status = 1;
 
     public BaseSpiderScheduler() {
         createQueue();
@@ -38,10 +38,8 @@ public class BaseSpiderScheduler implements SpiderScheduler {
         this.blockingQueueSize = blockingQueueSize;
         this.isDup = isDup;
         this.dupQueue = dupQueue;
-        createQueue();
     }
 
-    @Override
     public void createQueue() {
         spiderTrackers = new BaseQueue<>(taskSize);
         if (isDup) {
@@ -50,7 +48,7 @@ public class BaseSpiderScheduler implements SpiderScheduler {
     }
 
     public void createStorage() {
-        storage = new BaseStorage();
+        storage = new PrintStorage();
     }
 
     public void createThreadPool() {
@@ -58,33 +56,27 @@ public class BaseSpiderScheduler implements SpiderScheduler {
         threadPool = new ThreadPoolExecutor(threadCount, threadCount, 10, TimeUnit.SECONDS, blockingQueue);
     }
 
-    @Override
     public void start() {
-        monitor();
+//        monitor();
         run();
+        threadPool.shutdown();
     }
 
-    @Override
     public void monitor() {
         SpiderMonitor spiderMonitor = new SpiderMonitor(spiderTrackers, threadPool);
         Thread thread = new Thread(spiderMonitor);
         thread.setName(taskName);
         thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
-    @Override
     public void run() {
+        status = 2;
         while (spiderTrackers.size() != 0 || threadPool.getActiveCount() != 0) {
             if (spiderTrackers.size() > 0) {
                 SpiderTracker tracker = spiderTrackers.get();
-                BaseDoJob doJob = new BaseDoJob(tracker, storage);
+                BaseDoJob doJob = new BaseDoJob(tracker, storage, spiderTrackers);
                 if (isDup) {
-                    doJob = new BaseDoJob(tracker, dupQueue, storage);
+                    doJob = new BaseDoJob(tracker, dupQueue, storage, spiderTrackers);
                 }
                 while (threadPool.getQueue().size() >= blockingQueueSize) {
                     try {
@@ -94,25 +86,19 @@ public class BaseSpiderScheduler implements SpiderScheduler {
                     }
                 }
                 threadPool.submit(doJob);
+            } else {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
-        //todo 对spiderTracker队列进行循环判断，将其放入线程池进行抓取
     }
 
-    @Override
     public void stop() {
         spiderTrackers.remove();
         threadPool.shutdown();
-    }
-
-    @Override
-    public boolean storage(Object o) {
-        return false;
-    }
-
-    @Override
-    public boolean addSpiderTracker(SpiderTracker tracker) {
-        return false;
     }
 
     public int getTaskSize() {
@@ -155,30 +141,6 @@ public class BaseSpiderScheduler implements SpiderScheduler {
         this.storage = storage;
     }
 
-    public int getRequestsNum() {
-        return requestsNum;
-    }
-
-    public void setRequestsNum(int requestsNum) {
-        this.requestsNum = requestsNum;
-    }
-
-    public int getFailRequestsNum() {
-        return failRequestsNum;
-    }
-
-    public void setFailRequestsNum(int failRequestsNum) {
-        this.failRequestsNum = failRequestsNum;
-    }
-
-    public int getDataNum() {
-        return dataNum;
-    }
-
-    public void setDataNum(int dataNum) {
-        this.dataNum = dataNum;
-    }
-
     public int getCurrentActiveThreadNum() {
         return threadPool.getActiveCount();
     }
@@ -215,4 +177,11 @@ public class BaseSpiderScheduler implements SpiderScheduler {
         this.status = status;
     }
 
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
 }
