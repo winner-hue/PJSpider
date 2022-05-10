@@ -61,13 +61,12 @@ public class BaseSpiderScheduler implements SpiderScheduler {
     @Override
     public void start() {
         monitor();
-
+        run();
     }
 
     @Override
     public void monitor() {
         SpiderMonitor spiderMonitor = new SpiderMonitor(spiderTrackers, threadPool);
-
         Thread thread = new Thread(spiderMonitor);
         thread.setName(taskName);
         thread.start();
@@ -80,12 +79,30 @@ public class BaseSpiderScheduler implements SpiderScheduler {
 
     @Override
     public void run() {
-
+        while (spiderTrackers.size() != 0 || threadPool.getActiveCount() != 0) {
+            if (spiderTrackers.size() > 0) {
+                SpiderTracker tracker = spiderTrackers.get();
+                BaseDoJob doJob = new BaseDoJob(tracker, storage);
+                if (isDup) {
+                    doJob = new BaseDoJob(tracker, dupQueue, storage);
+                }
+                while (threadPool.getQueue().size() >= blockingQueueSize) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                threadPool.submit(doJob);
+            }
+        }
+        //todo 对spiderTracker队列进行循环判断，将其放入线程池进行抓取
     }
 
     @Override
     public void stop() {
-
+        spiderTrackers.remove();
+        threadPool.shutdown();
     }
 
     @Override
@@ -163,11 +180,7 @@ public class BaseSpiderScheduler implements SpiderScheduler {
     }
 
     public int getCurrentActiveThreadNum() {
-        return currentActiveThreadNum;
-    }
-
-    public void setCurrentActiveThreadNum(int currentActiveThreadNum) {
-        this.currentActiveThreadNum = currentActiveThreadNum;
+        return threadPool.getActiveCount();
     }
 
     public ThreadPoolExecutor getThreadPool() {
