@@ -3,7 +3,6 @@ package icu.fanjie.base;
 import icu.fanjie.*;
 import okhttp3.ConnectionSpec;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 public class BaseDownloader implements Downloader {
-    protected String method = "";
+    protected String method = "get";
     protected Headers headers = new Headers("user-agent:" + new JUA().getChromeUA());
     protected Data postBody = null;
     protected Proxies proxies = null;
@@ -19,6 +18,16 @@ public class BaseDownloader implements Downloader {
     protected Set<Integer> acceptStatusCode = new HashSet<>();
 
     public BaseDownloader() {
+        acceptStatusCode.add(200);
+    }
+
+    public BaseDownloader(String method, Headers headers, Data postBody, Proxies proxies, int retryCount, Set<Integer> acceptStatusCode) {
+        this.method = method;
+        this.headers = headers;
+        this.postBody = postBody;
+        this.proxies = proxies;
+        this.retryCount = retryCount;
+        this.acceptStatusCode = acceptStatusCode;
         acceptStatusCode.add(200);
     }
 
@@ -31,23 +40,35 @@ public class BaseDownloader implements Downloader {
         String url = tracker.getSeed();
         for (int i = 0; i < retryCount; i++) {
             try {
-                Response resp = Requests.get(url, null, headers, 10000, true, proxies, null, true);
-                if (isInAcceptStatusCode(resp.statusCode)) {
-                    tracker.setHtml(resp.getHtml());
-                    HashMap<String, Object> extraParams = tracker.getExtraParams();
-                    if (extraParams == null) {
-                        extraParams = new HashMap<>();
-                        extraParams.put("downloader", resp);
-                        tracker.setExtraParams(extraParams);
-                    } else {
-                        extraParams.put("downloader", resp);
-                    }
-                    break;
+                if (method.equalsIgnoreCase("get")) {
+                    Response resp = Requests.get(url, null, headers, 10000, true, proxies, null, true);
+                    if (getResponse(tracker, resp)) break;
                 }
+                if (method.equalsIgnoreCase("post")) {
+                    Response resp = Requests.post(url, null, postBody, headers, 10000, true, proxies, null, true);
+                    if (getResponse(tracker, resp)) break;
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private boolean getResponse(SpiderTracker tracker, Response resp) {
+        if (isInAcceptStatusCode(resp.statusCode)) {
+            tracker.setHtml(resp.getHtml());
+            HashMap<String, Object> extraParams = tracker.getExtraParams();
+            if (extraParams == null) {
+                extraParams = new HashMap<>();
+                extraParams.put("downloader", resp);
+                tracker.setExtraParams(extraParams);
+            } else {
+                extraParams.put("downloader", resp);
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override

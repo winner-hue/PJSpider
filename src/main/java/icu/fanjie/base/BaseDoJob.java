@@ -28,7 +28,7 @@ public class BaseDoJob implements Runnable {
         Downloader downloader = tracker.getDownloader();
         Parser parser = tracker.getParser();
         downloader.download(tracker);
-        parser.parser(tracker);
+        parser.process(tracker);
         storage.storage(tracker);
         if (dup != null) {
             List<SpiderTracker> dup = this.dup.dup(tracker);
@@ -43,7 +43,7 @@ public class BaseDoJob implements Runnable {
     }
 
     public void addSpiderTracker(SpiderTracker tracker) {
-
+        tracker.getExtraParams();
     }
 
     public SpiderTracker getTracker() {

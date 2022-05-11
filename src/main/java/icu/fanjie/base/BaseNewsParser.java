@@ -10,7 +10,7 @@ import org.jsoup.select.Elements;
 
 import java.util.List;
 
-public class BaseNewsParser implements Parser {
+public class BaseNewsParser extends Parser {
 
     protected String getTitle(Document soup, String html) {
         Elements title = soup.select("title");
@@ -70,4 +70,5 @@ public class BaseNewsParser implements Parser {
         jo.put("title", title);
         spiderTracker.getExtraParams().put("parser", jo);
     }
+
 }
