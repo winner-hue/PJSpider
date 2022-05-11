@@ -57,7 +57,7 @@ public class BaseSpiderScheduler {
     }
 
     public void start() {
-//        monitor();
+        monitor();
         run();
         threadPool.shutdown();
     }

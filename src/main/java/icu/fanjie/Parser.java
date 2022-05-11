@@ -12,6 +12,9 @@ public class Parser {
         parser(spiderTracker);
         JSONObject parser = (JSONObject) spiderTracker.getExtraParams().get("parser");
         JSONArray targetRequests = parser.getJSONArray("target_requests");
+        if (targetRequests == null) {
+            return;
+        }
         JSONArray ja = new JSONArray();
         for (Object targetRequest : targetRequests) {
             SpiderTracker tracker = (SpiderTracker) targetRequest;

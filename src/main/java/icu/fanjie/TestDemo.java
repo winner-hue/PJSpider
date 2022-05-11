@@ -5,7 +5,7 @@ import icu.fanjie.base.BaseNewsParser;
 import icu.fanjie.base.BaseSpiderScheduler;
 
 public class TestDemo {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         BaseSpiderScheduler scheduler = new BaseSpiderScheduler();
         SpiderTracker spiderTracker = new SpiderTracker();
         Downloader downloader = new BaseDownloader();
