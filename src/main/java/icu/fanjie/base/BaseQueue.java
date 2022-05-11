@@ -1,28 +1,29 @@
 package icu.fanjie.base;
 
 import icu.fanjie.Queue;
+import icu.fanjie.SpiderTracker;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class BaseQueue<E> implements Queue<E> {
-    protected LinkedBlockingQueue<E> blockingQueue = null;
+public class BaseQueue implements Queue {
+    protected LinkedBlockingQueue<Object> blockingQueue = null;
 
     public BaseQueue(int size) {
         blockingQueue = new LinkedBlockingQueue<>(size);
     }
 
     @Override
-    public boolean add(E e) {
+    public boolean add(Object e) {
         return blockingQueue.offer(e);
     }
 
     @Override
-    public E remove() {
+    public Object remove() {
         return blockingQueue.remove();
     }
 
     @Override
-    public boolean remove(E e) {
+    public boolean remove(Object e) {
         return blockingQueue.remove(e);
     }
 
@@ -37,7 +38,7 @@ public class BaseQueue<E> implements Queue<E> {
     }
 
     @Override
-    public E get() {
+    public Object get() {
         if (blockingQueue.size() > 0) {
             return blockingQueue.poll();
         }

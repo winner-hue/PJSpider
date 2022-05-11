@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 public class BaseSpiderScheduler {
     protected String taskName = "BaseSpider";
-    protected Queue<SpiderTracker> spiderTrackers;
+    protected Queue spiderTrackers;
     protected int taskSize = 100 * 10000;
     protected int threadCount = 10;
     protected Storage storage;
@@ -28,7 +28,7 @@ public class BaseSpiderScheduler {
         createThreadPool();
     }
 
-    public BaseSpiderScheduler(String taskName, Queue<SpiderTracker> spiderTrackers, int taskSize, int threadCount, Storage storage, ThreadPoolExecutor threadPool, int blockingQueueSize, boolean isDup, Dup<Object> dupQueue) {
+    public BaseSpiderScheduler(String taskName, Queue spiderTrackers, int taskSize, int threadCount, Storage storage, ThreadPoolExecutor threadPool, int blockingQueueSize, boolean isDup, Dup<Object> dupQueue) {
         this.taskName = taskName;
         this.spiderTrackers = spiderTrackers;
         this.taskSize = taskSize;
@@ -41,7 +41,7 @@ public class BaseSpiderScheduler {
     }
 
     public void createQueue() {
-        spiderTrackers = new BaseQueue<>(taskSize);
+        spiderTrackers = new BaseQueue(taskSize);
         if (isDup) {
             dupQueue = new BaseDup<>();
         }
@@ -73,7 +73,7 @@ public class BaseSpiderScheduler {
         status = 2;
         while (spiderTrackers.size() != 0 || threadPool.getActiveCount() != 0) {
             if (spiderTrackers.size() > 0) {
-                SpiderTracker tracker = spiderTrackers.get();
+                SpiderTracker tracker = (SpiderTracker) spiderTrackers.get();
                 BaseDoJob doJob = new BaseDoJob(tracker, storage, spiderTrackers);
                 if (isDup) {
                     doJob = new BaseDoJob(tracker, dupQueue, storage, spiderTrackers);
@@ -117,11 +117,11 @@ public class BaseSpiderScheduler {
         this.blockingQueueSize = blockingQueueSize;
     }
 
-    public Queue<SpiderTracker> getSpiderTrackers() {
+    public Queue getSpiderTrackers() {
         return spiderTrackers;
     }
 
-    public void setSpiderTrackers(Queue<SpiderTracker> spiderTrackers) {
+    public void setSpiderTrackers(Queue spiderTrackers) {
         this.spiderTrackers = spiderTrackers;
     }
 

@@ -3,10 +3,10 @@ package icu.fanjie;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class SpiderMonitor implements Runnable {
-    protected Queue<SpiderTracker> spiderTrackerQueue;
+    protected Queue spiderTrackerQueue;
     protected ThreadPoolExecutor threadPool;
 
-    public SpiderMonitor(Queue<SpiderTracker> spiderTrackerQueue, ThreadPoolExecutor threadPool) {
+    public SpiderMonitor(Queue spiderTrackerQueue, ThreadPoolExecutor threadPool) {
         this.spiderTrackerQueue = spiderTrackerQueue;
         this.threadPool = threadPool;
     }
@@ -22,11 +22,11 @@ public class SpiderMonitor implements Runnable {
         }
     }
 
-    public Queue<SpiderTracker> getSpiderTrackerQueue() {
+    public Queue getSpiderTrackerQueue() {
         return spiderTrackerQueue;
     }
 
-    public void setSpiderTrackerQueue(Queue<SpiderTracker> spiderTrackerQueue) {
+    public void setSpiderTrackerQueue(Queue spiderTrackerQueue) {
         this.spiderTrackerQueue = spiderTrackerQueue;
     }
 

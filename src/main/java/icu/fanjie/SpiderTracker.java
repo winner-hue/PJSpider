@@ -11,7 +11,7 @@ public class SpiderTracker {
     protected String seed;
     protected String previousSeed;
     protected HashMap<String, Object> extraParams;
-    protected int priority;
+    protected int priority = 1;
     protected String html;
 
     public SpiderTracker() {
@@ -23,6 +23,13 @@ public class SpiderTracker {
     public SpiderTracker(Downloader downloader, Parser parser) {
         this.downloader = downloader;
         this.parser = parser;
+    }
+
+    public SpiderTracker(Downloader downloader, Parser parser, String seed, int priority) {
+        this.downloader = downloader;
+        this.parser = parser;
+        this.seed = seed;
+        this.priority = priority;
     }
 
     public Downloader getDownloader() {

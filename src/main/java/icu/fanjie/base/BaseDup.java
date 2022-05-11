@@ -1,15 +1,16 @@
 package icu.fanjie.base;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import icu.fanjie.CommonUtil;
 import icu.fanjie.Dup;
 import icu.fanjie.SpiderTracker;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class BaseDup<E> implements Dup<E> {
 
-    HashSet<Object> objects = new HashSet<>();
+    protected Set<Object> objects = Collections.synchronizedSet(new HashSet<>());
 
     public BaseDup() {
 
@@ -17,27 +18,48 @@ public class BaseDup<E> implements Dup<E> {
 
     @Override
     public boolean isExist(Object o) {
-        return false;
+        return objects.contains(o);
     }
 
     @Override
     public boolean add(Object o) {
-        return false;
+        return objects.add(o);
     }
 
     @Override
     public boolean remove(Object o) {
-        return false;
+        return objects.remove(o);
     }
 
     @Override
     public boolean clean() {
-        return false;
+        try {
+            objects.clear();
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public List<SpiderTracker> dup(SpiderTracker spiderTracker) {
-        return null;
+        List<SpiderTracker> spiderTrackers = new ArrayList<>();
+        HashMap<String, Object> extraParams = spiderTracker.getExtraParams();
+        Object parser = extraParams.get("parser");
+        if (parser != null) {
+            JSONObject jo = (JSONObject) parser;
+            JSONArray trackers = jo.getJSONArray("trackers");
+            for (Object o : trackers) {
+                SpiderTracker tracker = (SpiderTracker) o;
+                String url = tracker.getSeed();
+                String md5Url = CommonUtil.getMd5(url);
+                boolean add = add(md5Url);
+                if (add) {
+                    spiderTrackers.add(tracker);
+                }
+            }
+        }
+        return spiderTrackers;
     }
 
 }

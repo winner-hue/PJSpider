@@ -1,23 +1,28 @@
 package icu.fanjie.base;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import icu.fanjie.*;
 
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BaseDoJob implements Runnable {
     protected SpiderTracker tracker;
     protected Dup<Object> dup;
     protected Storage storage;
-    protected Queue<SpiderTracker> spiderTrackerQueue;
+    protected Queue spiderTrackerQueue;
 
-    public BaseDoJob(SpiderTracker tracker, Dup<Object> dup, Storage storage, Queue<SpiderTracker> spiderTrackerQueue) {
+    public BaseDoJob(SpiderTracker tracker, Dup<Object> dup, Storage storage, Queue spiderTrackerQueue) {
         this.tracker = tracker;
         this.dup = dup;
         this.storage = storage;
         this.spiderTrackerQueue = spiderTrackerQueue;
     }
 
-    public BaseDoJob(SpiderTracker tracker, Storage storage, Queue<SpiderTracker> spiderTrackerQueue) {
+    public BaseDoJob(SpiderTracker tracker, Storage storage, Queue spiderTrackerQueue) {
         this.tracker = tracker;
         this.storage = storage;
         this.spiderTrackerQueue = spiderTrackerQueue;
@@ -32,18 +37,36 @@ public class BaseDoJob implements Runnable {
         storage.storage(tracker);
         if (dup != null) {
             List<SpiderTracker> dup = this.dup.dup(tracker);
-            addSpiderTracker(tracker, dup);
+            addSpiderTracker(dup);
         } else {
             addSpiderTracker(tracker);
         }
     }
 
-    public void addSpiderTracker(SpiderTracker tracker, List<SpiderTracker> spiderTrackers) {
-
+    public void addSpiderTracker(List<SpiderTracker> spiderTrackers) {
+        List<SpiderTracker> collect = spiderTrackers.stream().sorted(Comparator.comparing(SpiderTracker::getPriority).reversed()).collect(Collectors.toList());
+        for (SpiderTracker spiderTracker : collect) {
+            spiderTrackerQueue.add(spiderTracker);
+        }
     }
 
     public void addSpiderTracker(SpiderTracker tracker) {
-        tracker.getExtraParams();
+        HashMap<String, Object> extraParams = tracker.getExtraParams();
+        Object parser = extraParams.get("parser");
+        if (parser != null) {
+            JSONObject jo = (JSONObject) parser;
+            JSONArray trackers = jo.getJSONArray("target_requests");
+            for (Object tmpTracker : trackers) {
+                SpiderTracker task = (SpiderTracker) tmpTracker;
+                while (!spiderTrackerQueue.add(task)) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 
     public SpiderTracker getTracker() {

@@ -1,15 +1,15 @@
 package icu.fanjie;
 
-public interface Queue<E> {
-    boolean add(E e) throws InterruptedException;
+public interface Queue {
+    boolean add(Object e);
 
-    E remove();
+    Object remove();
 
-    boolean remove(E e);
+    boolean remove(Object e);
 
     int size();
 
     boolean isEmpty();
 
-    E get();
+    Object get();
 }
