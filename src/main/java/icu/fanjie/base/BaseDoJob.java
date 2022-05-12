@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import icu.fanjie.*;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -44,28 +45,34 @@ public class BaseDoJob implements Runnable {
     }
 
     public void addSpiderTracker(List<SpiderTracker> spiderTrackers) {
+        sort(spiderTrackers);
+    }
+
+    private void sort(List<SpiderTracker> spiderTrackers) {
         List<SpiderTracker> collect = spiderTrackers.stream().sorted(Comparator.comparing(SpiderTracker::getPriority).reversed()).collect(Collectors.toList());
         for (SpiderTracker spiderTracker : collect) {
-            spiderTrackerQueue.add(spiderTracker);
+            while (!spiderTrackerQueue.add(spiderTracker)) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
     public void addSpiderTracker(SpiderTracker tracker) {
         HashMap<String, Object> extraParams = tracker.getExtraParams();
         Object parser = extraParams.get("parser");
+        List<SpiderTracker> spiderTrackers = new ArrayList<>();
         if (parser != null) {
             JSONObject jo = (JSONObject) parser;
             JSONArray trackers = jo.getJSONArray("target_requests");
             for (Object tmpTracker : trackers) {
                 SpiderTracker task = (SpiderTracker) tmpTracker;
-                while (!spiderTrackerQueue.add(task)) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+                spiderTrackers.add(task);
             }
+            sort(spiderTrackers);
         }
     }
 
