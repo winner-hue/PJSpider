@@ -64,10 +64,30 @@ public class BaseNewsParser extends Parser {
     @Override
     public void parser(SpiderTracker spiderTracker) {
         String html = spiderTracker.getHtml();
+        Object parser_type = spiderTracker.getExtraParams().get("parser_type");
         Document soup = Jsoup.parse(html);
         JSONObject jo = new JSONObject();
-        String title = getTitle(soup, html);
-        jo.put("title", title);
+        if (parser_type.equals("list")) {
+            Elements elements = soup.select("div.Community-item-active a.blog");
+            JSONArray ja = new JSONArray();
+            for (int i = 0; i < 3; i++) {
+                String href = elements.get(i).attr("href");
+                SpiderTracker tracker = new SpiderTracker();
+                tracker.setSeed(href);
+                tracker.setPreviousSeed(spiderTracker.getSeed());
+                tracker.getExtraParams().put("parser_type", "detail");
+                tracker.setPriority(2);
+                ja.add(tracker);
+            }
+            jo.put("trackers", ja);
+        }
+        if (parser_type.equals("detail")) {
+            JSONObject parser_content = new JSONObject();
+            String title = getTitle(soup, html);
+            parser_content.put("title", title);
+            jo.put("parser_content", parser_content);
+        }
+
         spiderTracker.getExtraParams().put("parser", jo);
     }
 

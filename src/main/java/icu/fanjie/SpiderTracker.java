@@ -10,7 +10,7 @@ public class SpiderTracker {
     protected Parser parser;
     protected String seed;
     protected String previousSeed;
-    protected HashMap<String, Object> extraParams;
+    protected HashMap<String, Object> extraParams = new HashMap<>();
     protected int priority = 1;
     protected String html;
 

@@ -59,13 +59,7 @@ public class BaseDownloader implements Downloader {
         if (isInAcceptStatusCode(resp.statusCode)) {
             tracker.setHtml(resp.getHtml());
             HashMap<String, Object> extraParams = tracker.getExtraParams();
-            if (extraParams == null) {
-                extraParams = new HashMap<>();
-                extraParams.put("downloader", resp);
-                tracker.setExtraParams(extraParams);
-            } else {
-                extraParams.put("downloader", resp);
-            }
+            extraParams.put("downloader", resp);
             return true;
         }
         return false;
