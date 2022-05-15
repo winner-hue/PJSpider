@@ -31,7 +31,6 @@ public class TestDemo {
         scheduler.getSpiderTrackers().add(spiderTracker);
         // 添加任务名
         scheduler.setTaskName("csdn");
-
         scheduler.setStorage(storage);
         scheduler.start();
     }
