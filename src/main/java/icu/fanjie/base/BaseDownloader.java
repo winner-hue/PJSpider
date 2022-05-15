@@ -40,15 +40,8 @@ public class BaseDownloader implements Downloader {
         String url = tracker.getSeed();
         for (int i = 0; i < retryCount; i++) {
             try {
-                if (method.equalsIgnoreCase("get")) {
-                    Response resp = Requests.get(url, null, headers, 10000, true, proxies, null, true);
-                    if (getResponse(tracker, resp)) break;
-                }
-                if (method.equalsIgnoreCase("post")) {
-                    Response resp = Requests.post(url, null, postBody, headers, 10000, true, proxies, null, true);
-                    if (getResponse(tracker, resp)) break;
-                }
-
+                Response resp = Requests.request(method, url, null, postBody, headers, 10000, true, proxies, null, true, null);
+                if (getResponse(tracker, resp)) break;
             } catch (IOException e) {
                 e.printStackTrace();
             }

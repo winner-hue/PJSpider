@@ -3,6 +3,7 @@ package icu.fanjie;
 import icu.fanjie.base.BaseDownloader;
 import icu.fanjie.base.BaseNewsParser;
 import icu.fanjie.base.BaseSpiderScheduler;
+import icu.fanjie.base.PrintStorage;
 import icu.fanjie.base.plugin.JSONStorage;
 
 public class TestDemo {
@@ -16,7 +17,7 @@ public class TestDemo {
         // 创建解析器
         Parser parser = new BaseNewsParser();
         // 创建存储器
-        Storage storage = new JSONStorage();
+        Storage storage = new PrintStorage();
 
         spiderTracker.setDownloader(downloader);
         spiderTracker.setParser(parser);
