@@ -12,7 +12,7 @@ public class MongoDBSpiderScheduler extends BaseSpiderScheduler {
 
     }
 
-    public MongoDBSpiderScheduler(String taskName, Queue spiderTrackers, int taskSize, int threadCount, Storage storage, ThreadPoolExecutor threadPool, int blockingQueueSize, boolean isDup, Dup<Object> dupQueue) {
+    public MongoDBSpiderScheduler(String taskName, Queue spiderTrackers, int taskSize, int threadCount, Storage storage, ThreadPoolExecutor threadPool, int blockingQueueSize, boolean isDup, Dup dupQueue) {
         super(taskName, spiderTrackers, taskSize, threadCount, storage, threadPool, blockingQueueSize, isDup, dupQueue);
     }
 

@@ -19,7 +19,7 @@ public class BaseSpiderScheduler {
     protected ThreadPoolExecutor threadPool;
     protected int blockingQueueSize = 100;
     protected boolean isDup = true;
-    protected Dup<Object> dupQueue;
+    protected Dup dupQueue;
     public static int status = 1;
 
     public BaseSpiderScheduler() {
@@ -28,7 +28,7 @@ public class BaseSpiderScheduler {
         createThreadPool();
     }
 
-    public BaseSpiderScheduler(String taskName, Queue spiderTrackers, int taskSize, int threadCount, Storage storage, ThreadPoolExecutor threadPool, int blockingQueueSize, boolean isDup, Dup<Object> dupQueue) {
+    public BaseSpiderScheduler(String taskName, Queue spiderTrackers, int taskSize, int threadCount, Storage storage, ThreadPoolExecutor threadPool, int blockingQueueSize, boolean isDup, Dup dupQueue) {
         this.taskName = taskName;
         this.spiderTrackers = spiderTrackers;
         this.taskSize = taskSize;
@@ -43,7 +43,7 @@ public class BaseSpiderScheduler {
     public void createQueue() {
         spiderTrackers = new BaseQueue(taskSize);
         if (isDup) {
-            dupQueue = new BaseDup<>();
+            dupQueue = new BaseDup();
         }
     }
 
@@ -162,11 +162,11 @@ public class BaseSpiderScheduler {
         isDup = dup;
     }
 
-    public Dup<Object> getDupQueue() {
+    public Dup getDupQueue() {
         return dupQueue;
     }
 
-    public void setDupQueue(Dup<Object> dupQueue) {
+    public void setDupQueue(Dup dupQueue) {
         this.dupQueue = dupQueue;
     }
 

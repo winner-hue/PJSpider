@@ -11,7 +11,7 @@ public class MysqlSpiderScheduler extends BaseSpiderScheduler {
     public MysqlSpiderScheduler() {
     }
 
-    public MysqlSpiderScheduler(String taskName, Queue spiderTrackers, int taskSize, int threadCount, Storage storage, ThreadPoolExecutor threadPool, int blockingQueueSize, boolean isDup, Dup<Object> dupQueue) {
+    public MysqlSpiderScheduler(String taskName, Queue spiderTrackers, int taskSize, int threadCount, Storage storage, ThreadPoolExecutor threadPool, int blockingQueueSize, boolean isDup, Dup dupQueue) {
         super(taskName, spiderTrackers, taskSize, threadCount, storage, threadPool, blockingQueueSize, isDup, dupQueue);
     }
 

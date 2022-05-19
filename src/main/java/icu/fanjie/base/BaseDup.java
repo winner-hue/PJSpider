@@ -8,7 +8,7 @@ import icu.fanjie.SpiderTracker;
 
 import java.util.*;
 
-public class BaseDup<E> implements Dup<E> {
+public class BaseDup implements Dup {
 
     protected Set<Object> objects;
 

@@ -2,7 +2,7 @@ package icu.fanjie;
 
 import java.util.List;
 
-public interface Dup<E> {
+public interface Dup{
     boolean isExist(Object o);
 
     boolean add(Object o);

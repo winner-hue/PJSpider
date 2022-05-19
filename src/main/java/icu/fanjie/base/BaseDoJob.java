@@ -12,11 +12,11 @@ import java.util.stream.Collectors;
 
 public class BaseDoJob implements Runnable {
     protected SpiderTracker tracker;
-    protected Dup<Object> dup;
+    protected Dup dup;
     protected Storage storage;
     protected Queue spiderTrackerQueue;
 
-    public BaseDoJob(SpiderTracker tracker, Dup<Object> dup, Storage storage, Queue spiderTrackerQueue) {
+    public BaseDoJob(SpiderTracker tracker, Dup dup, Storage storage, Queue spiderTrackerQueue) {
         this.tracker = tracker;
         this.dup = dup;
         this.storage = storage;
@@ -84,11 +84,11 @@ public class BaseDoJob implements Runnable {
         this.tracker = tracker;
     }
 
-    public Dup<Object> getDup() {
+    public Dup getDup() {
         return dup;
     }
 
-    public void setDup(Dup<Object> dup) {
+    public void setDup(Dup dup) {
         this.dup = dup;
     }
 

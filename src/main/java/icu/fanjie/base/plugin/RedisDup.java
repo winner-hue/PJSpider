@@ -2,17 +2,18 @@ package icu.fanjie.base.plugin;
 
 import icu.fanjie.SpiderTracker;
 import icu.fanjie.base.BaseDup;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.List;
 
-public class RedisDup<E> extends BaseDup<E> {
+public class RedisDup extends BaseDup {
     protected String host = "127.0.0.1";
     protected int port = 6379;
     protected int db = 0;
     protected String password = "root";
-    protected String dupName = "spider";
+    protected String dupName = "spider_" + System.currentTimeMillis();
     protected JedisPool jedisPool = null;
 
     public RedisDup() {
@@ -37,26 +38,34 @@ public class RedisDup<E> extends BaseDup<E> {
 
     @Override
     public boolean isExist(Object o) {
-        return jedisPool.getResource().sismember(dupName, o.toString());
-
+        Jedis resource = jedisPool.getResource();
+        boolean sismember = resource.sismember(dupName, o.toString());
+        resource.close();
+        return sismember;
     }
 
     @Override
     public boolean add(Object o) {
-        long sadd = jedisPool.getResource().sadd(dupName, o.toString(), "1");
-        return sadd == 0;
+        Jedis resource = jedisPool.getResource();
+        long sadd = resource.sadd(dupName, o.toString(), "1");
+        resource.close();
+        return true;
     }
 
     @Override
     public boolean remove(Object o) {
-        long srem = jedisPool.getResource().srem(dupName, o.toString());
-        return srem == 0;
+        Jedis resource = jedisPool.getResource();
+        long srem = resource.srem(dupName, o.toString());
+        resource.close();
+        return true;
     }
 
     @Override
     public boolean clean() {
-        long del = jedisPool.getResource().del(dupName);
-        return del == 0;
+        Jedis resource = jedisPool.getResource();
+        long del = resource.del(dupName);
+        resource.close();
+        return true;
     }
 
     @Override
@@ -67,6 +76,8 @@ public class RedisDup<E> extends BaseDup<E> {
 
     @Override
     public void destroy() {
-        jedisPool.getResource().del(dupName);
+        Jedis resource = jedisPool.getResource();
+        resource.del(dupName);
+        resource.close();
     }
 }
