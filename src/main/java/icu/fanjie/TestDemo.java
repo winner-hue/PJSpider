@@ -3,11 +3,12 @@ package icu.fanjie;
 import icu.fanjie.base.BaseDownloader;
 import icu.fanjie.base.BaseNewsParser;
 import icu.fanjie.base.BaseSpiderScheduler;
-import icu.fanjie.base.PrintStorage;
-import icu.fanjie.base.plugin.JSONStorage;
+import icu.fanjie.base.plugin.MongoDBStorage;
+
+import java.sql.SQLException;
 
 public class TestDemo {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         // 创建调度器
         BaseSpiderScheduler scheduler = new BaseSpiderScheduler();
         // 创建任务
@@ -17,7 +18,7 @@ public class TestDemo {
         // 创建解析器
         Parser parser = new BaseNewsParser();
         // 创建存储器
-        Storage storage = new PrintStorage();
+        Storage storage = new MongoDBStorage();
 
         spiderTracker.setDownloader(downloader);
         spiderTracker.setParser(parser);

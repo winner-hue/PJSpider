@@ -94,6 +94,7 @@ public class BaseSpiderScheduler {
                 }
             }
         }
+        dupQueue.destroy();
     }
 
     public void stop() {

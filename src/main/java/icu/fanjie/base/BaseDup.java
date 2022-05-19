@@ -10,10 +10,10 @@ import java.util.*;
 
 public class BaseDup<E> implements Dup<E> {
 
-    protected Set<Object> objects = Collections.synchronizedSet(new HashSet<>());
+    protected Set<Object> objects;
 
     public BaseDup() {
-
+        objects = Collections.synchronizedSet(new HashSet<>());
     }
 
     @Override
@@ -60,6 +60,11 @@ public class BaseDup<E> implements Dup<E> {
             }
         }
         return spiderTrackers;
+    }
+
+    @Override
+    public void destroy() {
+        objects = null;
     }
 
 }

@@ -12,4 +12,6 @@ public interface Dup<E> {
     boolean clean();
 
     List<SpiderTracker> dup(SpiderTracker spiderTracker);
+
+    void destroy();
 }
