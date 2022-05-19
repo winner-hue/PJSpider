@@ -35,6 +35,7 @@ public class TestDemo {
         // 添加任务
         scheduler.getSpiderTrackers().add(spiderTracker);
         // 添加任务名
+        scheduler.setSpid
         scheduler.setTaskName("csdn");
         scheduler.setStorage(storage);
         scheduler.setDupQueue(dup);
