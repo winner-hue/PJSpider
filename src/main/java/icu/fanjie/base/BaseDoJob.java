@@ -51,11 +51,17 @@ public class BaseDoJob implements Runnable {
     private void sort(List<SpiderTracker> spiderTrackers) {
         List<SpiderTracker> collect = spiderTrackers.stream().sorted(Comparator.comparing(SpiderTracker::getPriority).reversed()).collect(Collectors.toList());
         for (SpiderTracker spiderTracker : collect) {
-            while (!spiderTrackerQueue.add(spiderTracker)) {
+            while (true) {
                 try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
+                    spiderTrackerQueue.add(spiderTracker);
+                    break;
+                } catch (Exception e) {
                     e.printStackTrace();
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         }

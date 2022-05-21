@@ -1,10 +1,8 @@
 package icu.fanjie;
 
-import icu.fanjie.base.BaseDownloader;
-import icu.fanjie.base.BaseNewsParser;
-import icu.fanjie.base.BaseSpiderScheduler;
-import icu.fanjie.base.PrintStorage;
+import icu.fanjie.base.*;
 import icu.fanjie.base.plugin.RedisDup;
+import icu.fanjie.base.plugin.RedisQueue;
 
 import java.io.Serializable;
 import java.sql.SQLException;
@@ -34,14 +32,18 @@ public class TestDemo implements Serializable {
         // 设置种子类型
         spiderTracker.getExtraParams().put("parser_type", "list");
         // 添加任务
-        scheduler.getSpiderTrackers().add(spiderTracker);
+        Queue queue = new RedisQueue();
+        queue.add(spiderTracker);
+        scheduler.setSpiderTrackers(queue);
         // 添加任务名
         scheduler.setTaskName("csdn");
         scheduler.setStorage(storage);
         scheduler.setDupQueue(dup);
-//        scheduler.start();
-        byte[] serialize = CommonUtil.serialize(spiderTracker);
-        SpiderTracker unserialize = (SpiderTracker) CommonUtil.unserialize(serialize);
-        System.out.println(unserialize.downloader);
+        scheduler.start();
+//        RedisQueue queue = new RedisQueue();
+//        boolean add = queue.add(spiderTracker);
+//        SpiderTracker test = (SpiderTracker) queue.get();
+//        System.out.println(test.downloader);
+
     }
 }

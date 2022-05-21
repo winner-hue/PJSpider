@@ -1,5 +1,6 @@
 package icu.fanjie.base.plugin;
 
+import icu.fanjie.CommonUtil;
 import icu.fanjie.base.BaseQueue;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -35,41 +36,53 @@ public class RedisQueue extends BaseQueue {
     }
 
     @Override
-    public boolean add(Object e) {
+    synchronized public boolean add(Object e) {
         Jedis resource = jedisPool.getResource();
-        long rpush = resource.rpush(spiderQueue, e.toString());
+        byte[] serialize = CommonUtil.serialize(e);
+        long rpush = resource.rpush(spiderQueue.getBytes(), serialize);
         resource.close();
         return rpush == 1;
     }
 
     @Override
-    public Object remove() {
+    synchronized public Object remove() {
         Jedis resource = jedisPool.getResource();
-        String lpop = resource.lpop(spiderQueue);
+        long del = resource.del(spiderQueue.getBytes());
         resource.close();
-        return lpop;
+        return del == 1;
     }
 
     @Override
-    public boolean remove(Object e) {
-        return blockingQueue.remove(e);
+    synchronized public boolean remove(Object e) {
+        return false;
     }
 
     @Override
-    public int size() {
-        return blockingQueue.size();
+    synchronized public int size() {
+        Jedis resource = jedisPool.getResource();
+        long scard = resource.llen(spiderQueue.getBytes());
+        resource.close();
+        return (int) scard;
     }
 
     @Override
-    public boolean isEmpty() {
-        return blockingQueue.isEmpty();
+    synchronized public boolean isEmpty() {
+        Jedis resource = jedisPool.getResource();
+        long scard = resource.llen(spiderQueue.getBytes());
+        resource.close();
+        return scard == 0;
     }
 
     @Override
-    public Object get() {
-        if (blockingQueue.size() > 0) {
-            return blockingQueue.poll();
+    synchronized public Object get() {
+        Jedis resource = jedisPool.getResource();
+        long llen = resource.llen(spiderQueue.getBytes());
+        if (llen > 0) {
+            byte[] bytes = resource.lpop(spiderQueue.getBytes());
+            resource.close();
+            return CommonUtil.unserialize(bytes);
         }
+        resource.close();
         return null;
     }
 }

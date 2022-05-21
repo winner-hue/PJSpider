@@ -29,7 +29,7 @@ public class RedisDup extends BaseDup {
         createRedisClient();
     }
 
-    protected void createRedisClient() {
+    synchronized protected void createRedisClient() {
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMaxTotal(5);
         config.setMaxIdle(3);
@@ -37,7 +37,7 @@ public class RedisDup extends BaseDup {
     }
 
     @Override
-    public boolean isExist(Object o) {
+    synchronized public boolean isExist(Object o) {
         Jedis resource = jedisPool.getResource();
         boolean sismember = resource.sismember(dupName, o.toString());
         resource.close();
@@ -45,7 +45,7 @@ public class RedisDup extends BaseDup {
     }
 
     @Override
-    public boolean add(Object o) {
+    synchronized public boolean add(Object o) {
         Jedis resource = jedisPool.getResource();
         long sadd = resource.sadd(dupName, o.toString(), "1");
         resource.close();
@@ -53,7 +53,7 @@ public class RedisDup extends BaseDup {
     }
 
     @Override
-    public boolean remove(Object o) {
+    synchronized public boolean remove(Object o) {
         Jedis resource = jedisPool.getResource();
         long srem = resource.srem(dupName, o.toString());
         resource.close();
@@ -61,7 +61,7 @@ public class RedisDup extends BaseDup {
     }
 
     @Override
-    public boolean clean() {
+    synchronized public boolean clean() {
         Jedis resource = jedisPool.getResource();
         long del = resource.del(dupName);
         resource.close();
@@ -69,13 +69,13 @@ public class RedisDup extends BaseDup {
     }
 
     @Override
-    public List<SpiderTracker> dup(SpiderTracker spiderTracker) {
+    synchronized public List<SpiderTracker> dup(SpiderTracker spiderTracker) {
         return super.dup(spiderTracker);
     }
 
 
     @Override
-    public void destroy() {
+    synchronized public void destroy() {
         Jedis resource = jedisPool.getResource();
         resource.del(dupName);
         resource.close();
