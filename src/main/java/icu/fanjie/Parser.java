@@ -13,7 +13,7 @@ public class Parser implements Serializable {
     public void process(SpiderTracker spiderTracker) {
         parser(spiderTracker);
         JSONObject parser = (JSONObject) spiderTracker.getExtraParams().get("parser");
-        JSONArray targetRequests = parser.getJSONArray("target_requests");
+        JSONArray targetRequests = parser.getJSONArray("trackers");
         if (targetRequests == null) {
             return;
         }
