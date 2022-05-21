@@ -6,9 +6,10 @@ import icu.fanjie.base.BaseSpiderScheduler;
 import icu.fanjie.base.PrintStorage;
 import icu.fanjie.base.plugin.RedisDup;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 
-public class TestDemo {
+public class TestDemo implements Serializable {
     public static void main(String[] args) throws SQLException {
         // 创建调度器
         BaseSpiderScheduler scheduler = new BaseSpiderScheduler();
@@ -35,10 +36,12 @@ public class TestDemo {
         // 添加任务
         scheduler.getSpiderTrackers().add(spiderTracker);
         // 添加任务名
-        scheduler.setSpid
         scheduler.setTaskName("csdn");
         scheduler.setStorage(storage);
         scheduler.setDupQueue(dup);
-        scheduler.start();
+//        scheduler.start();
+        byte[] serialize = CommonUtil.serialize(spiderTracker);
+        SpiderTracker unserialize = (SpiderTracker) CommonUtil.unserialize(serialize);
+        System.out.println(unserialize.downloader);
     }
 }

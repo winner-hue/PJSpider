@@ -3,7 +3,9 @@ package icu.fanjie;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-public class Parser {
+import java.io.Serializable;
+
+public class Parser implements Serializable {
     protected void parser(SpiderTracker spiderTracker) {
 
     }

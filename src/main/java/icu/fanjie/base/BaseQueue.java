@@ -12,6 +12,10 @@ public class BaseQueue implements Queue {
         blockingQueue = new LinkedBlockingQueue<>(size);
     }
 
+    public BaseQueue() {
+
+    }
+
     @Override
     public boolean add(Object e) {
         return blockingQueue.offer(e);

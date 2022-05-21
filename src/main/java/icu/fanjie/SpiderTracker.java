@@ -3,9 +3,10 @@ package icu.fanjie;
 import icu.fanjie.base.BaseDownloader;
 import icu.fanjie.base.BaseNewsParser;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class SpiderTracker {
+public class SpiderTracker implements Serializable {
     protected Downloader downloader;
     protected Parser parser;
     protected String seed;
