@@ -12,10 +12,10 @@ public class PrintStorage implements Storage {
         JSONObject jo = (JSONObject) parser;
         JSONObject parser_content = jo.getJSONObject("parser_content");
         if (parser_content != null) {
+            System.out.println("---------------------------------------------------------------------");
             for (String key : parser_content.keySet()) {
                 System.out.println(key + ": " + parser_content.get(key));
             }
         }
-        System.out.println("---------------------------------------------------------------------");
     }
 }
