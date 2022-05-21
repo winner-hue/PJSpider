@@ -16,5 +16,6 @@ public class PrintStorage implements Storage {
                 System.out.println(key + ": " + parser_content.get(key));
             }
         }
+        System.out.println("---------------------------------------------------------------------");
     }
 }
