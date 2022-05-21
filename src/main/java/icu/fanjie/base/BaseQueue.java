@@ -13,7 +13,7 @@ public class BaseQueue implements Queue {
     }
 
     public BaseQueue() {
-
+        blockingQueue = new LinkedBlockingQueue<>(100 * 10000);
     }
 
     @Override
