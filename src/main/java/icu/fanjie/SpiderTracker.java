@@ -1,8 +1,5 @@
 package icu.fanjie;
 
-import icu.fanjie.base.BaseDownloader;
-import icu.fanjie.base.BaseNewsParser;
-
 import java.io.Serializable;
 import java.util.HashMap;
 
@@ -16,8 +13,7 @@ public class SpiderTracker implements Serializable {
     protected String html;
 
     public SpiderTracker() {
-        this.downloader = new BaseDownloader();
-        this.parser = new BaseNewsParser();
+
     }
 
 
